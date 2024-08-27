@@ -1,0 +1,20 @@
+# SQL
+-- first promt
+SELECT *
+FROM superstore
+WHERE price 
+ORDER BY price;
+
+-- second prompt
+SELECT SUM(price)
+FROM superstore;
+
+-- third prompt
+SELECT AVG(price), category
+FROM superstore
+WHERE category = "Kitchen Supplies";
+
+-- fourth prompt: What is the average rating for items in the category Electronics?
+SELECT AVG(average_rating) , category
+FROM superstore
+WHERE category = "Electronics";
