@@ -1,0 +1,41 @@
+-- Technology average tenure (industry wide) is 6. Categorize tenure by Low, Average, High turnover
+SELECT company_name
+, CASE WHEN avg_employee_tenure >6 THEN "Low"
+WHEN avg_employee_tenure >=5 THEN "Average"
+ELSE "High"
+END AS turnover
+FROM fortune_companies
+WHERE industry="Technology"
+ORDER BY avg_employee_tenure ASC;
+
+-- Which companies in Healthcare have at least 15 PTO days or 10 weeks of maternity leave?
+SELECT company_name
+, paid_time_off_days
+, maternity_leave_weeks
+FROM fortune_companies
+WHERE industry="Healthcare"
+AND paid_time_off_days >= 15
+AND maternity_leave_weeks >= 10;
+
+-- Avg of PTO across all industries
+SELECT industry
+, ROUND(AVG(paid_time_off_days)) AS avg_pto_days
+FROM fortune_companies
+GROUP BY industry
+ORDER BY avg_pto_days DESC;
+
+-- Industries that have revenue higher than average (of all data) revenue of 259
+SELECT industry
+, ROUND(AVG(revenue)) AS avg_industry_revenue
+FROM fortune_companies
+GROUP BY industry
+HAVING revenue >=259
+ORDER BY avg_industry_revenue;
+
+-- Which companies have no healthcare benefits or have less than 15 PTO days?
+SELECT company_name
+, paid_time_off_days AS pto_days
+, healthcare_benefits
+FROM fortune_companies
+WHERE pto_days <15
+OR healthcare_benefits=0;
