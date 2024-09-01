@@ -1,0 +1,49 @@
+-- Working on ProgreSQL
+SELECT *
+FROM "netflix_titles_info" LIMIT 5;
+
+
+-- Working on ProgreSQL and JOIN
+SELECT title.title
+, title.release_year
+, title.duration
+, title.rating
+, people.director
+, people.cast
+FROM "netflix_titles_info" title
+LEFT JOIN "netflix_people" people
+ON title.show_id=people.show_id;
+
+
+-- How many movie titles are there in the database? (movies only, not tv shows) 
+
+SELECT COUNT(*)
+FROM "netflix_titles_info" 
+WHERE type='Movie';
+
+
+-- When was the most recent batch of tv shows and/or movies added to the database?
+SELECT MAX(date(date_added))
+FROM "netflix_titles_info";
+
+-- List all the movies and tv shows in alphabetical order.
+SELECT title
+FROM "netflix_titles_info"
+ORDER BY title ASC;
+
+
+-- Who was the Director for the movie The Starling?
+SELECT people.director
+FROM netflix_people people
+LEFT JOIN netflix_titles_info titles
+ON people.show_id=titles.show_id
+WHERE titles.title='The Starling';
+
+
+-- What is the oldest movie in the database and what year was it made?
+SELECT title
+, release_year
+FROM netflix_titles_info
+WHERE type='Movie'
+ORDER BY release_year ASC
+LIMIT 1;
