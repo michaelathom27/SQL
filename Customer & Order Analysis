@@ -60,3 +60,49 @@ ON feb.orderID=cust.order_id
 WHERE LENGTH(OrderID)=6
 AND OrderID <> "Order ID"
 AND feb.Quantity >2;
+
+-- Cont'd.
+
+-- Which locations in New York received at least 3 orders in January, and how many orders did they each receive?
+SELECT DISTINCT location
+, COUNT(orderID)
+FROM BIT_DB.JanSales
+WHERE orderID <> "Order ID"
+AND LENGTH(orderID)=6
+AND location LIKE "%NY%"
+GROUP BY location
+HAVING COUNT(orderID)>=3;
+
+-- How many of each type of headphone were sold in February?
+SELECT DISTINCT Product
+,SUM(Quantity) AS Quantity
+FROM BIT_DB.FebSales
+WHERE Product LIKE "%Headphones"
+GROUP BY Product;
+
+-- What was the average amount spent per account in February?
+SELECT SUM(feb.price*feb.Quantity)/COUNT(cust.acctnum)
+FROM BIT_DB.FebSales feb
+LEFT JOIN BIT_DB.customers cust
+ON feb.orderID=cust.order_id
+WHERE LENGTH(orderID)=6
+AND orderID <> "Order ID";
+
+-- What was the average quantity of products purchased per account in February?
+SELECT SUM(feb.quantity)/COUNT(cust.acctnum)
+FROM BIT_DB.FebSales feb
+LEFT JOIN BIT_DB.customers cust
+ON feb.orderID=cust.order_id
+WHERE LENGTH(orderID)=6
+AND orderID <> "Order ID";
+
+-- Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT ROUND(SUM(Quantity*price),2) AS revenue
+, Product
+FROM BIT_DB.JanSales
+WHERE LENGTH(orderID)=6
+AND orderID <> "Order ID"
+GROUP BY Product
+ORDER BY revenue DESC;
+
+-- SUM(Q*P) because price may vary on some days in certain data, this one didn't vary.
