@@ -1,0 +1,73 @@
+-- Show each county's most purchased genre
+WITH chinook_CTE AS
+(
+    SELECT cust.Country
+    , gen.Name AS genre
+    , COUNT(invoice_items.InvoiceId) AS gen_count
+FROM customers cust
+LEFT JOIN invoices
+ON cust.CustomerId=invoices.CustomerId
+
+LEFT JOIN invoice_items
+ON invoices.InvoiceId=invoice_items.InvoiceId
+
+LEFT JOIN tracks
+ON invoice_items.TrackID=tracks.TrackId
+
+LEFT JOIN genres gen
+ON tracks.GenreId=gen.GenreId
+
+GROUP BY country
+, gen.Name
+)
+
+SELECT country
+    , genre
+FROM chinook_CTE cte
+WHERE gen_count =
+    ( 
+    SELECT MAX(gen_count)
+    FROM chinook_CTE sub
+    WHERE sub.country -- used from sub query (this query)
+    =cte.country -- used from cte query (above)
+    );
+    
+
+-- Which tracks are in multiple playlists by labeling them 'Y' or 'N' and how many playlists are they in?
+SELECT  tracks.Name AS track_name,
+    COUNT(pt.PlaylistId) AS playlist_count,
+    CASE
+        WHEN COUNT(pt.PlaylistId) > 1 THEN 'Y'
+        ELSE 'N'
+    END AS in_multiple_playlists
+    
+FROM tracks
+LEFT JOIN playlist_track pt
+ON tracks.TrackId=pt.TrackId
+
+LEFT JOIN playlists
+ON pt.PlaylistId=playlists.PlaylistId
+
+GROUP BY tracks.Name
+ORDER BY playlist_count DESC;
+
+
+-- Which country made the most revenue?
+WITH chinook_CTE AS
+(
+    SELECT cust.Country
+    , SUM(initems.UnitPrice*initems.Quantity) AS revenue
+FROM customers cust
+LEFT JOIN invoices
+ON cust.CustomerId=invoices.CustomerId
+
+LEFT JOIN invoice_items initems
+ON invoices.InvoiceId=initems.InvoiceId
+
+GROUP BY country
+)
+
+SELECT country
+FROM chinook_CTE
+ORDER BY revenue DESC
+LIMIT 1;
